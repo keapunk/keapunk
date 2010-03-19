@@ -1,0 +1,144 @@
+
+what can you do with a git repository?  well:
+
+	git clone git://github.com/jquery/jquery.git
+or...
+	git clone git@github.com:keapunk/keapunk.git
+
+
+cool.  so how do you make one?
+
+if i recall, i installed git ...
+
+	apt-get install git-core
+
+then ...
+
+	git config --global user.name "Kea Punk"
+	git config --global user.email kea@kea.gen.nz
+
+and added a public key.
+
+make sure key creation and git operations are all under same login account!
+
+also, be careful to copy the exact bytes of ~/.ssh/id_dsa.pub into the meagre text area provided on your 
+github account page.
+
+
+now this should work:
+
+	mkdir keapunk
+	cd keapunk
+	git init
+	touch README
+	git add README
+	git commit -m 'first commit'
+	git remote add origin git@github.com:keapunk/keapunk.git
+	git push origin master
+
+if push fails, try
+
+	ssh -v git@github.com
+
+
+if you're root (or some other irrelevant user) you'll get some incomprehensible barf along the 
+lines of...
+
+	OpenSSH_4.7p1 Debian-8ubuntu1.2, OpenSSL 0.9.8g 19 Oct 2007
+	debug1: Reading configuration data /etc/ssh/ssh_config
+	.
+	.
+	.
+	debug1: identity file /root/.ssh/identity type -1
+	debug1: identity file /root/.ssh/id_rsa type -1
+	debug1: identity file /root/.ssh/id_dsa type -1
+	.
+	.
+	.
+
+you're looking for:
+
+	.
+	.
+	debug1: identity file ~/.ssh/id_rsa type -1
+	.
+	.
+
+but one reason you might have decided to become root is if the ssh tools you're using responded with the 
+error:
+
+	.
+	.
+	PRNG is not seeded
+
+..and you realised that you don't have permission to read /dev/random
+
+at this point, DO NOT SUCCUMB TO THE POWER OF THE DARK SIDE AND BECOME ROOT!
+
+simply do:
+
+	sudo chmod a+rw /dev/random
+
+and proceed as the user you yearn to be.
+
+now, if it's the first time you've ssh'd to git as whatever user you are, you'll get:
+
+	.
+	.
+	The authenticity of host 'github.com (207.97.227.239)' can't be established.
+	RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+	Are you sure you want to continue connecting (yes/no)? yes
+	.
+	.
+
+this is not an error.  most people just say yes (take me now):
+
+	.
+	.
+	Warning: Permanently added 'github.com,207.97.227.239' (RSA) to the list of known hosts.
+	.
+	.
+
+but then, if (as explained above) you're attempting to connect as a different user to the one that created 
+your public key on git, you'll see something like...
+
+	.
+	.
+	debug1: Authentications that can continue: publickey
+	debug1: Next authentication method: publickey
+	debug1: Trying private key: /root/.ssh/identity
+	debug1: Trying private key: /root/.ssh/id_rsa
+	debug1: Trying private key: /root/.ssh/id_dsa
+	debug1: No more authentication methods to try.
+	Permission denied (publickey).
+	.
+	.
+
+boo hoo.  the lesson is, be consistent.  know yourself.  if you get all these ducks in a row, you can find nirvana.  
+
+this is how ssh works...  a merchant sends a box and an open padlock across the sea to his trading partner, keeping the key in his desk drawer.  his trading partner puts his own key and lock in the box, locks it with the merchant's padlock and sends it back to it's owner.  viola! a secure channel is born!
+
+	.
+	.
+	debug1: Authentication succeeded (publickey).
+	debug1: channel 0: new [client-session]
+	debug1: Entering interactive session.
+	debug1: Sending environment.
+	ERROR: Hi keapunk! You've successfully authenticated, but GitHub does not provide shell access
+        debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+	debug1: channel 0: free: client-session, nchannels 1
+	Connection to github.com closed.
+	debug1: Transferred: stdin 0, stdout 0, stderr 34 bytes in 0.6 seconds
+	debug1: Bytes per second: stdin 0.0, stdout 0.0, stderr 60.7
+	debug1: Exit status 1
+	.
+	.
+
+
+YAY!  now you can do:
+
+	git push origin master
+
+and your masterpiece is safe.
+
+
