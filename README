@@ -135,10 +135,66 @@ this is how ssh works...  a merchant sends a box and an open padlock across the 
 	.
 
 
-YAY!  now you can do:
+YAY! now you have to commit them to a brand new commit, not an old one you've already pushed and amended 
+on yr working tree.  then ...
 
 	git push origin master
 
-and your masterpiece is safe.
+and your masterpiece is safe!  to see your changes on your github repository, you have to do a git pull [http://github.com/keapunk/keapunk/pull_request/] from git hub, adding as recipients your own account name and/or any other 3v1lhxrs whose public keys have infected your ring.
+
+____________________________
+
+the way i work with git is, for each task, checkout a branch...
+
+	git pull
+	git checkout -b taskname master
+
+then, work work work ...
+
+	git add file*.[ch]*
+	git commit -m 'taskname is live!'
+
+coffee. work work work ...
+
+	git add file*.[ch]*
+	git commit --amend
+
+tested! works! finished!
+
+	git checkout master
+	git pull
+	git checkout taskname
+	git rebase master
+
+might need to fix conflicts, in which case repeat the above seqence (add, pull, rebase)
+
+now ...
+
+	git log
+
+	commit 9c77a02b606aa84b9d862a583ba5d7bcc857e313
+	Author: Kea Punk <kea@kea.gen.nz>
+	Date:   Fri Mar 19 20:20:19 2010 +1300
+	
+	    first commit and stuff
+	
+	commit b011e4f12ae47300bd98e6759fd627e032a867bc
+	Author: Kea Punk <kea@kea.gen.nz>
+	Date:   Fri Mar 19 20:20:19 2010 +1300
+	
+	    first commit
+	.
+	.
+	.
+	.
 
 
+	git show 9c77a02b606aa84b9d862a583ba5d7bcc857e313
+
+are these the changes you want preserved for posterity?
+
+	git checkout master
+	git cherry-pick 9c77a02b606aa84b9d862a583ba5d7bcc857e313
+	git push origin master
+
+.................. thats just one way of doing it, but it works for me..
